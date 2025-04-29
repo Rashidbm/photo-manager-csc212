@@ -1,3 +1,4 @@
+
 public class BST<T> {
     BSTNode<T> root, current;
 	
@@ -14,7 +15,7 @@ public class BST<T> {
 	public T retrieve () {
 		return current.data;
 	}
-    public boolean update(int key, T data){
+    public boolean update(String key, T data){
 		remove_key(current.key);
 		return insert(key, data);
 	}
@@ -71,17 +72,17 @@ public class BST<T> {
 				return findparent(p, t.right);
 		}
 	}
-    public boolean findkey(int tkey) {
+    public boolean findkey(String tkey) {
 		BSTNode<T> p = root, q = root;	
 		if(empty())
 			return false;	
 		while(p != null) {
 			q = p;
-			if(p.key == tkey) {
+			if(p.key.equals(tkey)) {
 				current = p;
 				return true;
 			}
-			else if(tkey < p.key)
+			else if(tkey.compareToIgnoreCase(p.key) < 0)
 				p = p.left;
 			else
 				p = p.right;
@@ -89,7 +90,7 @@ public class BST<T> {
 		current = q;
 		return false;
 	}
-    public boolean insert(int k, T val) {
+    public boolean insert(String k, T val) {
 		BSTNode<T> p, q = current;
 		if(findkey(k)) {
 			current = q;  // findkey() modified current
@@ -102,7 +103,7 @@ public class BST<T> {
 		}
 		else {
 			// current is pointing to parent of the new key
-			if (k < current.key)
+			if (k.compareToIgnoreCase(current.key) < 0)
 				current.left = p;
 			else
 				current.right = p;
@@ -110,20 +111,21 @@ public class BST<T> {
 			return true;
 		}
 	}
-    public boolean remove_key(int tkey){
+    public boolean remove_key(String tkey){
 		BooleanWrapper removed = new BooleanWrapper(false);
 		BSTNode<T> p;
 		p = remove_aux(tkey, root, removed);
 		current = root = p;
 		return removed.getValue();
 	}
-    private BSTNode<T> remove_aux(int key, BSTNode<T> p, BooleanWrapper flag) {
+   
+    private BSTNode<T> remove_aux(String key, BSTNode<T> p, BooleanWrapper flag) {
 		BSTNode<T> q, child = null;
 		if(p == null)
 			return null;
-		if(key < p.key)
+		if(key.compareToIgnoreCase(p.key) < 0)
 			p.left = remove_aux(key, p.left, flag); //go left
-		else if(key > p.key)
+		else if(key.compareToIgnoreCase(p.key) > 0)
 			p.right = remove_aux(key, p.right, flag); //go right
 		else { // key is found
 			flag.setValue(true);
@@ -143,4 +145,13 @@ public class BST<T> {
 	    }
 		return p;
     }
+
+private BSTNode<T> find_min(BSTNode<T> p){
+    if(p == null)
+        return null;
+    while(p.left != null){
+        p = p.left;
+    }
+    return p;
+}
 }
