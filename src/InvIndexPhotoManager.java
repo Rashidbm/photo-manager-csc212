@@ -3,12 +3,39 @@ public class InvIndexPhotoManager {
 
     // Constructor
     public InvIndexPhotoManager() {
-        // To be implemented
+        invertedIndex = new BST<LinkedList<Photo>>();
     }
 
     // Add a photo
     public void addPhoto(Photo p) {
-        // To be implemented
+        LinkedList<String> photo_tags = p.getTags();
+        if(photo_tags.empty())
+            return;
+        
+        // we iterate over all the tags
+        photo_tags.findFirst();
+        while(!photo_tags.last()){
+            if(invertedIndex.findkey(photo_tags.retrieve())){
+                invertedIndex.retrieve().insert(p);
+            }
+            else{
+                // tag not found. Insert new tag node with photo list
+                LinkedList<Photo> ll = new LinkedList<Photo>();
+                ll.insert(p);
+                invertedIndex.insert(photo_tags.retrieve(), ll);
+            }
+            // move to next tag
+            photo_tags.findNext();
+        }
+        // handle the last tag.
+        if(invertedIndex.findkey(photo_tags.retrieve())){
+            invertedIndex.retrieve().insert(p);
+        }
+        else{
+            LinkedList<Photo> ll = new LinkedList<Photo>();
+            ll.insert(p);
+            invertedIndex.insert(photo_tags.retrieve(), ll);
+        }
     }
 
     // Delete a photo
