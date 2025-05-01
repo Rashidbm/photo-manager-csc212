@@ -1,5 +1,3 @@
-import java.util.LinkedList;
-
 public class Photo {
 private String path;
 private LinkedList<String> tags;
