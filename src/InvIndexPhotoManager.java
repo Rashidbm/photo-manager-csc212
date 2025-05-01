@@ -40,12 +40,92 @@ public class InvIndexPhotoManager {
 
     // Delete a photo
     public void deletePhoto(String path) {
-        // To be implemented
+        if(invertedIndex.empty())
+        return;
+        
+        //Search for Path tags, if its not found it will return null, and the " PathTagss==null " will catch it.
+        LinkedList<String> PathTags=FindPathTags(invertedIndex.root,path);
+
+
+
+        
+        if(PathTags==null)
+        return;
+
+        //Delete part
+        PathTags.findFirst();
+        while(true){
+            if(invertedIndex.findkey(PathTags.retrieve())) {
+
+                LinkedList<Photo> PhotoList = invertedIndex.retrieve();
+                
+                /* if the photo list is empty skip it and check if it is the last element exit the tags loop 
+                if its not go to the next tag and continue the loop */ 
+                if(PhotoList.empty()) {
+                    if(PathTags.last())
+                        break;
+
+                    PathTags.findNext();
+                    continue;
+                }
+                
+                boolean Removed = false;
+                PhotoList.findFirst();
+                while(!PhotoList.last()){
+                    if(PhotoList.retrieve().getPath().equals(path)){
+                        PhotoList.remove();
+                        Removed=true;
+                        break;
+                    }
+                    PhotoList.findNext();
+            }
+            if(!Removed){
+            if(PhotoList.retrieve().getPath().equals(path))
+                PhotoList.remove();
+        }
+            //checks if the data in the key is empty
+            if(invertedIndex.retrieve().empty())
+                invertedIndex.remove_key(PathTags.retrieve());
+        }
+        if(PathTags.last())
+        break;
+
+        PathTags.findNext();
+        
     }
+}//End of delete
+
+//Find path tags
+private LinkedList<String> FindPathTags(BSTNode<LinkedList<Photo>> b, String path){
+   if(b==null)
+   return null;
+
+   LinkedList<Photo> listPhoto = b.data;
+   listPhoto.findFirst();
+   while(!listPhoto.last()){
+        if(listPhoto.retrieve().getPath().equals(path))
+            return listPhoto.retrieve().getTags();
+        listPhoto.findNext();
+   }
+   if(listPhoto.retrieve().getPath().equals(path))
+        return listPhoto.retrieve().getTags();
+    
+    LinkedList<String> left = FindPathTags(b.left,path);
+    if(left !=null)
+        return left;
+        
+    LinkedList<String> right = FindPathTags(b.right,path);
+    if(right !=null)
+        return right;
+    
+    return null;
+
+
+   }
+ 
 
     // Return the inverted index of all managed photos
     public BST<LinkedList<Photo>> getPhotos() {
-        // To be implemented
-        return null;
+        return invertedIndex;
     }
 }
