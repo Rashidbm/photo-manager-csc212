@@ -1,7 +1,11 @@
+import java.util.LinkedList;
+
 public class Album {
     private String name;
     private String condition;
     private PhotoManager manager;
+    private int nbComps;
+
 
     public Album(String name, String condition, PhotoManager manager) {
         this.name = name;
@@ -22,17 +26,59 @@ public class Album {
     // manager getter
     public PhotoManager getManager() {
         return manager;
-    }
-
-    // Return all photos that meet the conditions 
+        
+    }    
+ 
     public LinkedList<Photo> getPhotos() {
-        // To be implemented
-        return new LinkedList<Photo>();
+        int nbComps = 0;
+        LinkedList<Photo> result = new LinkedList<>();
+        
+        if (condition == null || condition.isEmpty()) 
+            return manager.getPhotos();
+        
+        String[] tags = condition.split(" AND ");
+        
+        manager.getPhotos().findFirst();
+        do {
+            Photo p = manager.getPhotos().retrieve();
+            boolean match = true;
+            
+            for (String tag : tags) {
+                boolean found = false;
+                p.getTags().findFirst();
+
+                
+                do {
+                    nbComps++;
+                    if (p.getTags().retrieve().equals(tag)) { 
+                        found = true; 
+                        break; 
+                    }
+                    p.getTags().findNext();
+                }
+                while (!p.getTags().last());
+
+
+
+                if (!found) { 
+                    match = false; 
+                    break; 
+                }
+            }
+                        if (match) 
+                result.insert(p);
+            
+            manager.getPhotos().findNext();
+        }
+        while (!manager.getPhotos().last()) ;
+
+
+        return result;
+
     }
 
-    // Return the number of tag comparisons used to find all photos of the album (hint: get advantage of getPhotos)
-    public int getNbComps() {
-        // To be implemented
-        return 0;
+    public int getNbComps() { 
+        return nbComps; 
     }
+
 }
